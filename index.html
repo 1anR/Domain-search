@@ -148,7 +148,8 @@ async function doh(domain){
 async function rdap(domain){
   try {
     const r = await fetch("https://rdap.org/domain/" + encodeURIComponent(domain));
-    if (r.status === 404) return "free";
+    // A 404 only counts when a real registry answered. rdap.org itself returns 404 for extensions it does not cover (such as .co.za).
+    if (r.status === 404) return new URL(r.url).hostname.endsWith("rdap.org") ? "unknown" : "free";
     if (r.ok) return "taken";
   } catch (e) {}
   return "unknown";
